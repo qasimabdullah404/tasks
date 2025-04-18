@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  db:
+    image: mongo:8.0.3-noble
+    restart: always
+    volumes:
+      - db_data:/data/db # Mount a volume for data persistence
+    ports:
+      - 27017:27017
+  api:
+    build: .
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    environment:
+      - MONGODB_URI=mongodb://db:27017/todos
+      - PORT=3000 # Port for the Node.js application
+
+volumes:
+  db_data:
