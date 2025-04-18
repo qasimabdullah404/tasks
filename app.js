@@ -4,11 +4,15 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const Todos = require("./todo");
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+
 const app = express();
 const API_VERSION = "/api/v1";
 
 app.use(express.json());
 app.use(logger("combined"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 8000;
 const MONGODB_URI =
@@ -25,7 +29,53 @@ mongoose.connection.on("error", (err) => {
   return console.log(err.message);
 });
 
+/**
+ * @swagger
+ * /healthz:
+ *   get:
+ *     summary: Health check endpoint
+ *     responses:
+ *       200:
+ *         description: App is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ */
 app.get("/healthz", (req, res) => res.json({ status: "OK" }));
+
+/**
+ * @swagger
+ * /todos:
+ *   get:
+ *     summary: Get all todos
+ *     tags: [Todos]
+ *     responses:
+ *       200:
+ *         description: List of todos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 todos:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       todo:
+ *                         type: string
+ *                       completed:
+ *                         type: boolean
+ */
 app.get(`${API_VERSION}/todos`, async (req, res) => {
   try {
     const todos = await Todos.find({}, "todo completed");
@@ -49,6 +99,41 @@ app.get(`${API_VERSION}/todos`, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /todos/{id}:
+ *   get:
+ *     summary: Get a todo by ID
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The todo ID
+ *     responses:
+ *       200:
+ *         description: A single todo item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 todos:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     todo:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ */
 app.get(`${API_VERSION}/todos/:id`, async (req, res) => {
   try {
     const todo = await Todos.findById(req.params.id, "todo completed")
@@ -72,6 +157,45 @@ app.get(`${API_VERSION}/todos/:id`, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /todos:
+ *   post:
+ *     summary: Create a new todo
+ *     tags: [Todos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - todo
+ *             properties:
+ *               todo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully created todo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 todos:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     todo:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ */
 app.post(`${API_VERSION}/todos`, async (req, res) => {
   try {
     const { todo } = req.body;
@@ -96,6 +220,52 @@ app.post(`${API_VERSION}/todos`, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /todos/{id}:
+ *   patch:
+ *     summary: Update a todo's text
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Todo ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - todo
+ *             properties:
+ *               todo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated todo task
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 todos:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     todo:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ */
 app.patch(`${API_VERSION}/todos/:id`, async (req, res) => {
   try {
     const { todo } = req.body;
@@ -119,6 +289,41 @@ app.patch(`${API_VERSION}/todos/:id`, async (req, res) => {
   }
 })
 
+/**
+ * @swagger
+ * /todos/{id}/completed:
+ *   patch:
+ *     summary: Toggle the completed status of a todo
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Todo ID
+ *     responses:
+ *       200:
+ *         description: Toggled completed status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 todos:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     todo:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ */
 app.patch(`${API_VERSION}/todos/:id/completed`, async (req, res) => {
   try {
     const existingTodo = await Todos.findById(req.params.id, "todo")
@@ -148,6 +353,32 @@ app.patch(`${API_VERSION}/todos/:id/completed`, async (req, res) => {
   }
 })
 
+/**
+ * @swagger
+ * /todos/{id}:
+ *   delete:
+ *     summary: Delete a todo
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Todo ID to delete
+ *     responses:
+ *       200:
+ *         description: Successfully deleted todo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
 app.delete(`${API_VERSION}/todos/:id`, async (req, res) => {
   try {
     const deleteTodo = await Todos.findOneAndDelete({_id: req.params.id})
