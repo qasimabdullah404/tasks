@@ -1,0 +1,7 @@
+notes:
+  - task: Build a basic CRUD TODO API
+    status: completed
+  - task: containerize it using docker compose
+    status: onGoing
+  - task: Implement ELK
+    status: pending

@@ -1,0 +1,21 @@
+{
+  "name": "todos_api",
+  "version": "0.0.1_BETA",
+  "description": "A TODO List API",
+  "main": "app.js",
+  "author": "Qasim Abdullah <qasimabdullah404@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  }
+}
