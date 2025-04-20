@@ -33,9 +33,9 @@ A minimalist yet mighty Task API that does one thing and does it well—manages 
    git clone https://github.com/qasimabdullah404/tasks.git
    docker compose up -d
    ```
+---
 
 ## ✨ Author
----
 
 **Qasim Abdullah**  
 [💼 LinkedIn](https://www.linkedin.com/in/qaximabdullah/) • [📦 GitHub](https://github.com/qasimabdullah404)
