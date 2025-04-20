@@ -14,6 +14,7 @@ const API_VERSION = "/api/v1";
 
 app.use(express.json());
 app.use(morgan("combined"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 8000;
 const MONGODB_URI =
