@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const morgan = require("morgan");
 const mongoose = require("mongoose");
 const Todos = require("./todo");
 
@@ -13,7 +12,6 @@ const app = express();
 const API_VERSION = "/api/v1";
 
 app.use(express.json());
-app.use(morgan("combined"));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 8000;
@@ -78,10 +76,6 @@ app.get("/healthz", (req, res) => res.json({ status: "OK" }));
  *                       completed:
  *                         type: boolean
  */
-app.get("/healthz", (req, res) => {
-  res.json({ status: "OK" });
-});
-
 app.get(`${API_VERSION}/todos`, async (req, res) => {
   logger.info(`GET ${API_VERSION}/todos - Fetching all todos`);
 
