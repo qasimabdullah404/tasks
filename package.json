@@ -1,6 +1,6 @@
 {
   "name": "todos_api",
-  "version": "0.0.1_BETA",
+  "version": "1.0.0",
   "description": "A TODO List API",
   "main": "app.js",
   "author": "Qasim Abdullah <qasimabdullah404@gmail.com>",

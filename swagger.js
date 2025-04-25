@@ -6,7 +6,7 @@ const options = {
     openapi: "3.0.0",
     info: {
       title: "TODO API",
-      version: "0.0.1_BETA",
+      version: "1.0.0",
       description: "A simple API for managing todos",
     },
     servers: [
