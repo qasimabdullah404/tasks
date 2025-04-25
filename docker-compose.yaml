@@ -4,7 +4,7 @@ services:
     image: mongo:8.0.3-noble
     restart: always
     volumes:
-      - db_data:/data/db # Mount a volume for data persistence
+      - db_data:/data/db
     ports:
       - 27017:27017
   api:
@@ -16,7 +16,7 @@ services:
       - db
     environment:
       - MONGODB_URI=mongodb://db:27017/todos
-      - PORT=3000 # Port for the Node.js application
+      - PORT=3000
     volumes:
       - ./logs:/app/logs
   elasticsearch:
